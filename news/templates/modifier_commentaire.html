@@ -1,0 +1,7 @@
+<h2>Modifier le commentaire</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.contenu }}
+    <button type="submit">Modifier</button>
+</form>

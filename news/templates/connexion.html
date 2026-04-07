@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Connexion - JOJ News{% endblock %}
+
+{% block content %}
+
+<section class="d-flex align-items-center justify-content-center" style="min-height: 80vh; background-color: #f5f7fa;">
+    
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 420px; border-radius: 15px;">
+        
+        <div class="card-body p-4">
+            
+            <!-- TITRE -->
+            <div class="text-center mb-4">
+                <h3 class="fw-bold">Connexion</h3>
+                <p class="text-muted small">Accédez à votre compte JOJ News</p>
+            </div>
+
+            <!-- MESSAGES -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- FORMULAIRE -->
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- USERNAME -->
+                <div class="mb-3">
+                    <label class="form-label">Nom d'utilisateur</label>
+                    <input type="text" name="username" class="form-control form-control-lg" placeholder="Entrez votre nom" required>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="mb-3">
+                    <label class="form-label">Mot de passe</label>
+                    <input type="password" name="password" class="form-control form-control-lg" placeholder="••••••••" required>
+                </div>
+
+                <!-- BOUTON -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Se connecter
+                    </button>
+                </div>
+            </form>
+
+            <!-- LIEN INSCRIPTION -->
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    Pas encore inscrit ?
+                    <a href="{% url 'inscription' %}" class="text-decoration-none fw-semibold">
+                        Créer un compte
+                    </a>
+                </small>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

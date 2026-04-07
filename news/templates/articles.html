@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ article.titre }} - JOJ News{% endblock %}
+
+{% block content %}
+<section class="hero-section text-center text-white py-5">
+    <div class="container hero-content">
+       
+    </div>
+    <div class="hero-overlay"></div>
+</section>
+
+<!-- ARTICLE -->
+<section class="py-5" style="background-color: #f8f9fa;">
+    <div class="container" style="max-width: 800px;">
+        
+        <!-- TITRE -->
+        <h1 class="fw-bold mb-3">{{ article.titre }}</h1>
+
+        <!-- INFOS -->
+        <p class="text-muted mb-4">
+            {{ article.auteur.username }} | 📅 {{ article.date_publication|date:"d M Y" }} |
+            <span class="badge bg-primary">{{ article.categorie.nom }}</span>
+        </p>
+
+        <!-- IMAGE -->
+        <div class="mb-4 rounded overflow-hidden">
+            {% if article.image %}
+                <img src="{{ article.image.url }}" class="img-fluid w-100" style="object-fit: cover; max-height: 400px;">
+            {% else %}
+                <img src="{% static 'images/banner1.jpg' %}" class="img-fluid w-100" style="object-fit: cover; max-height: 400px;">
+            {% endif %}
+        </div>
+
+        <!-- TEXTE -->
+        <div style="text-align: justify; line-height: 1.8; color: #333;">
+            {{ article.contenu }}
+        </div>
+
+    </div>
+</section>
+
+<!-- COMMENTAIRES -->
+<section class="py-5" style="background-color: #ffffff;">
+    <div class="container" style="max-width: 800px;">
+        
+        <!-- TITRE COMMENTAIRE AVEC BARRE -->
+        <div class="d-flex align-items-center mb-4">
+            <div style="width: 4px; height: 30px; background-color: #0d6efd; margin-right: 10px;"></div>
+            <h3 class="fw-bold mb-0">Commentaires</h3>
+        </div>
+
+        <!-- LISTE -->
+        {% for commentaire in article.commentaires.all %}
+            <div class="d-flex mb-3">
+                
+                <!-- BARRE VERTICALE -->
+                <div style="width: 3px; background-color: #ddd; margin-right: 10px;"></div>
+
+                <!-- CONTENU -->
+                <div class="card shadow-sm rounded-3 flex-grow-1" style="background-color: #f9f9f9;">
+                    <div class="card-body">
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <strong>{{ commentaire.auteur.username }}</strong>
+                                <small class="text-muted ms-2">
+                                    {{ commentaire.date_creation|date:"d M Y H:i" }}
+                                </small>
+                            </div>
+
+                            {% if user == commentaire.auteur %}
+                            <div>
+                                <a href="#" class="text-decoration-none me-2"
+                                   onclick="showEdit({{ commentaire.id }}); return false;">
+                                   Modifier
+                                </a>
+                                <a href="{% url 'supprimer_commentaire' commentaire.pk %}"
+                                   class="text-danger text-decoration-none"
+                                   onclick="return confirm('Supprimer ce commentaire ?');">
+                                   Supprimer
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <p id="contenu-{{ commentaire.id }}">
+                            {{ commentaire.contenu }}
+                        </p>
+
+                        {% if user == commentaire.auteur %}
+                        <form id="form-{{ commentaire.id }}" method="post"
+                              action="{% url 'modifier_commentaire' commentaire.pk %}"
+                              style="display:none;" class="mt-2">
+                            {% csrf_token %}
+                            <input type="text" name="contenu"
+                                   value="{{ commentaire.contenu }}"
+                                   class="form-control mb-2">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                Enregistrer
+                            </button>
+                        </form>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">Aucun commentaire pour le moment.</p>
+        {% endfor %}
+
+        <!-- AJOUT COMMENTAIRE -->
+        {% if user.is_authenticated %}
+            <div class="card shadow-sm mt-4 rounded-3" style="background-color: #f9f9f9;">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.contenu }}
+                        <button type="submit" class="btn btn-primary mt-2 w-100">
+                            Ajouter un commentaire
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-muted mt-3">
+                <a href="{% url 'connexion' %}">Connectez-vous</a> pour commenter.
+            </p>
+        {% endif %}
+
+    </div>
+</section>
+
+<!-- SCRIPT -->
+<script>
+function showEdit(id) {
+    const form = document.getElementById("form-" + id);
+    form.style.display = form.style.display === "none" ? "block" : "none";
+}
+</script>
+
+{% endblock %}
